@@ -1,15 +1,16 @@
 from PyQt6.QtWidgets import QWidget, QSlider, QLabel, QVBoxLayout
 from PyQt6.QtCore import Qt
+from typing import Tuple
 
 class Slider(QWidget):
-    def __init__(self, customLabel):
+    def __init__(self, customLabel: str, min: int, max: int, val: int):
         super().__init__()
         
         # Create slider
         self.slider = QSlider(Qt.Orientation.Horizontal, self)
-        self.slider.setMinimum(0)
-        self.slider.setMaximum(100)
-        self.slider.setValue(20)
+        self.slider.setMinimum(min)
+        self.slider.setMaximum(max)
+        self.slider.setValue(val)
 
         # Label
         self.label = QLabel(customLabel, self.slider)

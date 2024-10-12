@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Optional
 import random
 from dataclasses import dataclass
 import time
@@ -144,9 +144,13 @@ class SandGame:
                     self.__vine_grow_on_block__(x, y)
                     self.vineTime = time.time()
     
-    def reset_game_world(self):
-        """Resets the game world.
+    def reset_game_world(self, newSize: Tuple[int, int] | None = None):
+        """Resets the game world with an option to designate new size.
         """        
+        if newSize:
+            self.gameWidth = newSize[0]
+            self.gameHeight = newSize[1]
+            
         self.__gameMatrix__ = np.full((self.gameWidth, self.gameHeight), "A")
     
     def __unit_test_reset__(self):

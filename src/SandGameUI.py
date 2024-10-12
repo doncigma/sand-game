@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGraphicsView, QGraphicsScene, QVBoxLayout, QHBoxLayout, QGraphicsRectItem, QPushButton, QRadioButton, QCheckBox
-from PyQt6.QtCore import QTimer, QRectF, QPoint
+from PyQt6.QtCore import QTimer, QRect, QRectF, QPoint, Qt
 from PyQt6.QtGui import QColor, QMouseEvent
 from typing import Tuple
 
@@ -42,17 +42,19 @@ class SandGameUI(QMainWindow):
         self.fatEraseBox = QRadioButton("Fat Erase")
         self.fatEraseBox.toggled.connect(lambda: self.set_mouse_mode("FAT_ERASE"))
 
-        
         # Physics UI
-        self.brownianSlider = Slider("Brownian: " + str(brownian))
+        self.resetBox = QPushButton("Reset")
+        self.resetBox.pressed.connect(lambda: self.reset_game_world())
+        
+        # self.gameSizeSlider = Slider("Game Size: " + str(2), 0, 2, 1)
+        # self.gameSizeSlider.slider.valueChanged.connect(self.game_size_change)
+        
+        self.brownianSlider = Slider("Brownian: " + str(brownian), 0, 100, 20)
         self.brownianSlider.slider.valueChanged.connect(self.brownian_slider_change)
         
         self.gravityBox = QCheckBox("Gravity")
         self.gravityBox.setChecked(True)
         self.gravityBox.stateChanged.connect(self.gravity_checkbox_toggle)
-        
-        self.resetBox = QPushButton("Reset")
-        self.resetBox.pressed.connect(lambda: self.reset_game_world())
         
         # Setup Scene (interactable game world) and View (renderer of scene)
         self.scene = QGraphicsScene()
@@ -68,6 +70,7 @@ class SandGameUI(QMainWindow):
         toolbarWidget = QWidget()
         toolbar = QHBoxLayout(toolbarWidget)
         toolbar.addWidget(self.resetBox)
+        # toolbar.addWidget(self.gameSizeSlider)
         toolbar.addWidget(self.brownianSlider)
         toolbar.addWidget(self.gravityBox)
         toolbar.addWidget(self.sandBox)
@@ -86,8 +89,32 @@ class SandGameUI(QMainWindow):
         self.setCentralWidget(centralWidget)
         centralWidget.setLayout(layout)
     
-    # Input Event Handlers
-    def brownian_slider_change(self, val):
+    # Physics Handlers
+    # def game_size_change(self, val: int):
+    #     if val ==0:
+    #         self.gameWidth = 40
+    #         self.gameHeight = 40
+    #     if val == 1:
+    #         self.gameWidth = 60
+    #         self.gameHeight = 60
+    #     if val == 2:
+    #         self.gameWidth = 100
+    #         self.gameHeight = 60
+        
+    #     self.gameSizeSlider.label.setText("Game Size: " + str(val + 1))
+    #     self.SandGame.reset_game_world((self.gameWidth, self.gameHeight))
+        
+    #     self.scene.setSceneRect(QRectF(0, 0, self.gameWidth, self.gameHeight))
+        
+    #     if hasattr(self, 'view'):
+    #         self.layout().removeWidget(self.view)
+    #         self.view.deleteLater()
+        
+    #     self.view = QGraphicsView(self.scene, self)
+    #     self.layout().addWidget(self.view)
+    #     self.view.fitInView(self.scene.sceneRect(), mode=Qt.AspectRatioMode.KeepAspectRatio)
+    
+    def brownian_slider_change(self, val: int):
         self.brownianSlider.label.setText("Brownian: " + str(val))
         self.SandGame.set_brownian(val)
     
@@ -97,6 +124,7 @@ class SandGameUI(QMainWindow):
     def reset_game_world(self):
         self.SandGame.reset_game_world()
     
+    # Input Event handlers
     def set_mouse_mode(self, mode: str):
         if mode in self.allElements:
             self.mouseMode = mode

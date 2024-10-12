@@ -1,7 +1,0 @@
-Game Engine:
-    job is to update the data structure
-    handles physics with gravity and brownian methods that are called in the 
-UI:
-    handles redrawing the canvas, updating the screen
-    handles inputs events
-    retrieves the data of the canvas from the loop object and displays
