@@ -8,8 +8,3 @@ We have found that a size of 125 x 60 fits most monitors and is a good balance o
 To play: simply run PlayGame.py with 2 arguments: the game width and game height. If you want to change the default brownian you can pass that as an optional 4th arguement.
 
 To test: run EngineTest.py and check terimanl for output.
-
-
-Elijah: I ended up completing the bulk of the game engine early on so I helped Michael with the ui until I went back to fix my bugs. Also did the vine effect/block.
-
-Michael:
