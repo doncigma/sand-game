@@ -1,9 +1,7 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QGraphicsView, QGraphicsItem, QGraphicsScene, QVBoxLayout, QHBoxLayout, QGraphicsRectItem, QGraphicsEllipseItem, QRadioButton, QCheckBox, QDateTimeEdit
-from PyQt6.QtCore import QTimer, QRectF, QPointF, QPoint
+from PyQt6.QtWidgets import QMainWindow, QWidget, QGraphicsView, QGraphicsScene, QVBoxLayout, QHBoxLayout, QGraphicsRectItem, QPushButton, QRadioButton, QCheckBox
+from PyQt6.QtCore import QTimer, QRectF, QPoint
 from PyQt6.QtGui import QColor, QMouseEvent
 from typing import Tuple
-
-import time
 
 from SandGame import SandGame
 from Slider import Slider
@@ -44,13 +42,17 @@ class SandGameUI(QMainWindow):
         self.fatEraseBox = QRadioButton("Fat Erase")
         self.fatEraseBox.toggled.connect(lambda: self.set_mouse_mode("FAT_ERASE"))
 
+        
         # Physics UI
+        self.brownianSlider = Slider("Brownian: " + str(brownian))
+        self.brownianSlider.slider.valueChanged.connect(self.brownian_slider_change)
+        
         self.gravityBox = QCheckBox("Gravity")
         self.gravityBox.setChecked(True)
         self.gravityBox.stateChanged.connect(self.gravity_checkbox_toggle)
-
-        self.brownianSlider = Slider("Brownian: " + str(brownian))
-        self.brownianSlider.slider.valueChanged.connect(self.brownian_slider_change)
+        
+        self.resetBox = QPushButton("Reset")
+        self.resetBox.pressed.connect(lambda: self.reset_game_world())
         
         # Setup Scene (interactable game world) and View (renderer of scene)
         self.scene = QGraphicsScene()
@@ -65,6 +67,7 @@ class SandGameUI(QMainWindow):
         # Layout Widgets
         toolbarWidget = QWidget()
         toolbar = QHBoxLayout(toolbarWidget)
+        toolbar.addWidget(self.resetBox)
         toolbar.addWidget(self.brownianSlider)
         toolbar.addWidget(self.gravityBox)
         toolbar.addWidget(self.sandBox)
@@ -84,13 +87,16 @@ class SandGameUI(QMainWindow):
         centralWidget.setLayout(layout)
     
     # Input Event Handlers
-    def gravity_checkbox_toggle(self):
-        self.SandGame.toggle_gravity()
-
     def brownian_slider_change(self, val):
         self.brownianSlider.label.setText("Brownian: " + str(val))
         self.SandGame.set_brownian(val)
+    
+    def gravity_checkbox_toggle(self):
+        self.SandGame.toggle_gravity()
 
+    def reset_game_world(self):
+        self.SandGame.reset_game_world()
+    
     def set_mouse_mode(self, mode: str):
         if mode in self.allElements:
             self.mouseMode = mode

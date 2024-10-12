@@ -12,7 +12,7 @@ class SandGame:
     class Vine:
         vineMove = "A,R,F"
         chance = 15
-        limit = 100
+        limit = 200
         cnt = 0
     
     def __init__(self, gameSize: Tuple[int, int] = (50, 50), brownian: int = 20) -> None:
@@ -144,5 +144,12 @@ class SandGame:
                     self.__vine_grow_on_block__(x, y)
                     self.vineTime = time.time()
     
-    def __reset_game_world__(self):
+    def reset_game_world(self):
+        """Resets the game world.
+        """        
+        self.__gameMatrix__ = np.full((self.gameWidth, self.gameHeight), "A")
+    
+    def __unit_test_reset__(self):
+        """For unit testing purposes only.
+        """        
         self.__gameMatrix__ = np.full((5, 5), "A")

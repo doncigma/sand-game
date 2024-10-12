@@ -12,7 +12,7 @@ def test_cases():
         print("Rock place", (2, 2), game.get_block(2, 2))
 
         # Gravity test
-        game.__reset_game_world__()
+        game.__unit_test_reset__()
         print("\n", "GRAVITY AND LAND ON ROCK TEST")
         game.place_block("S", 2, 2)
         print("Sand place", (2, 2), game.get_block(2, 2))
@@ -24,7 +24,7 @@ def test_cases():
         print("Block after gravity", (2, 3), game.get_block(2, 3))
 
         # Brownian test
-        game.__reset_game_world__()
+        game.__unit_test_reset__()
         print("\n", "BROWNIAN TEST")
         game.place_block("S", 2, 2)
         print("Sand place", game.get_block(2, 2))
@@ -34,7 +34,7 @@ def test_cases():
         print("Brownian check", game.get_block(3, 2))
 
         # Bottom test
-        game.__reset_game_world__()
+        game.__unit_test_reset__()
         print("\n", "BOTTOM TEST")
         game.place_block("S", 2, 3)
         print("Sand place", (2, 3), game.get_block(2, 3))
@@ -46,7 +46,7 @@ def test_cases():
         print("Block after gravity", (2, 4), game.get_block(2, 4))
 
         # Edge test
-        game.__reset_game_world__()
+        game.__unit_test_reset__()
         print("\n", "EDGE TEST")
         game.place_block("S", 3, 2)
         print("Sand place", (3, 2), game.get_block(3, 2))
