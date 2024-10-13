@@ -36,6 +36,9 @@ class SandGameUI(QMainWindow):
         self.fertBox = QRadioButton("Fertilizer")
         self.fertBox.toggled.connect(lambda: self.set_mouse_mode("F"))
 
+        self.waterBox = QRadioButton("Water")
+        self.waterBox.toggled.connect(lambda: self.set_mouse_mode("W"))
+        
         self.eraseBox = QRadioButton("Erase")
         self.eraseBox.toggled.connect(lambda: self.set_mouse_mode("ERASE"))
 
@@ -77,6 +80,7 @@ class SandGameUI(QMainWindow):
         toolbar.addWidget(self.rockBox)
         toolbar.addWidget(self.vineBox)
         toolbar.addWidget(self.fertBox)
+        toolbar.addWidget(self.waterBox)
         toolbar.addWidget(self.eraseBox)
         toolbar.addWidget(self.fatEraseBox)
         
@@ -176,6 +180,8 @@ class SandGameUI(QMainWindow):
             color = QColor(1, 50, 32)
         elif drawType == "F":
             color = QColor(39, 34, 28)
+        elif drawType == "W":
+            color = QColor(35, 137, 218)
         
         block = QGraphicsRectItem(x*self.cellSide, y*self.cellSide, self.cellSide, self.cellSide)
         block.setBrush(color)

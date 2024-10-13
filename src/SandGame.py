@@ -5,15 +5,13 @@ from dataclasses import dataclass
 import time
 
 class SandGame:
-    elementList = "A,S,R,V,F"
-    blockList = "S,R,V,F"
+    elementList = "A,S,R,V,F,W,"
+    blockList = "S,R,V,F,W,"
 
     @dataclass
     class Vine:
         vineMove = "A,R,F"
         chance = 15
-        limit = 200
-        cnt = 0
     
     def __init__(self, gameSize: Tuple[int, int] = (50, 50), brownian: int = 20) -> None:
         self.gameWidth = gameSize[0]
@@ -23,6 +21,7 @@ class SandGame:
         self.__gravityOn__ = True
         self.vine = self.Vine()
         self.vineTime = time.time()
+        self.lastWaterPos = "L"
     
     # Getters and Setters
     def get_brownian(self) -> int:
@@ -73,23 +72,23 @@ class SandGame:
                 self.__gameMatrix__[x][y] = block
             elif block == "F":
                 self.__gameMatrix__[x][y] = block
+            elif block == "W" and self.can_move("W", x, y):
+                self.__gameMatrix__[x][y] = block
     
     def can_move(self, blockToMove: str, x: int, y: int):
         result = False
         
-        if x > self.gameWidth or y > self.gameHeight or x < 0 or y < 0:
-            return result
-        
-        spot = self.get_block(x, y)
-        if blockToMove == "S":
-            if spot == "A":
+        if 0 <= x < self.gameWidth and 0 <= y < self.gameHeight:
+            spot = self.get_block(x, y)
+            if blockToMove == "S" and spot == "A":
                 result = True
-        elif blockToMove == "V":
-            if spot == "F":
-                self.vine.limit += 25  
-            if spot in self.vine.vineMove:
+            elif blockToMove == "V" and spot in self.vine.vineMove:
+                if spot == "F":
+                    pass
                 result = True
-            
+            elif blockToMove == "W" and spot == "A":
+                result = True
+                 
         return result
         
     def remove_block(self, x: int, y: int, blockToReplace = "A"):
@@ -100,34 +99,53 @@ class SandGame:
         return self.__gameMatrix__
     
     # Physics Processes
-    def __apply_gravity_on_block__(self, x: int, y: int):
-        if self.__gravityOn__ and self.can_move("S", x, y+1):
+    def __apply_gravity_on_block__(self, x: int, y: int, blockToApply: str):
+        if self.__gravityOn__ and self.can_move(blockToApply, x, y+1):
             self.remove_block(x, y)
-            self.place_block("S", x, y+1)
+            self.place_block(blockToApply, x, y+1)
 
-    def __apply_brownian_on_block__(self, x: int, y: int):
-        if self.get_block(x, y) == "S":
-            if random.randint(0, 99) * 0.5 < self.__brownian__ :
-                coin = random.randint(0, 1) == 0
-                if coin == 0 and self.can_move("S", x-1, y):
-                    self.place_block("S", x-1, y)
+    def __apply_brownian_on_block__(self, x: int, y: int, blockToApply: str):
+        if self.get_block(x, y) == blockToApply:
+            if random.randint(0, 99) < self.__brownian__ :
+                coin = random.randint(0, 1)
+                if coin == 0 and self.can_move(blockToApply, x-1, y):
+                    self.place_block(blockToApply, x-1, y)
                     self.remove_block(x, y)
-                elif self.can_move("S", x+1, y):
-                    self.place_block("S", x+1, y)
+                elif coin == 1 and self.can_move(blockToApply, x+1, y):
+                    self.place_block(blockToApply, x+1, y)
                     self.remove_block(x, y)
         
+    def __apply_flow_on_block__(self, x: int, y: int, blockToApply: str):
+        if self.get_block(x, y) == blockToApply:
+            if self.lastWaterPos == "L":
+                # coin = random.randint(0, 1)
+                if self.can_move(blockToApply, x-1, y):
+                    self.place_block(blockToApply, x-1, y)
+                    self.remove_block(x, y)
+                    self.lastWaterPos = "L"
+                elif self.can_move(blockToApply, x+1, y):
+                    self.place_block(blockToApply, x+1, y)
+                    self.remove_block(x, y)
+                    self.lastWaterPos = "R"
+            elif self.lastWaterPos == "R":
+                # coin = random.randint(0, 1)
+                if self.can_move(blockToApply, x+1, y):
+                    self.place_block(blockToApply, x+1, y)
+                    self.remove_block(x, y)
+                    self.lastWaterPos = "R"
+                elif self.can_move(blockToApply, x-1, y):
+                    self.place_block(blockToApply, x-1, y)
+                    self.remove_block(x, y)
+                    self.lastWaterPos = "L"
+                    
     def __vine_grow_on_block__(self, x: int, y: int):
-        if self.vine.cnt < self.vine.limit:
-            if random.randint(0, 99) < self.vine.chance:
-                if random.randint(0, 99) < 15 and self.get_block(x+1, y-1) in self.vine.vineMove and self.get_block(x+1, y+1) in self.vine.vineMove:# and self.get_block(x, y+1) in self.vine.vineMove:
-                    self.place_block("V", x+1, y)   # right
-                    self.vine.cnt += 1
-                elif random.randint(0, 99) < 15 and self.get_block(x-1, y-1) in self.vine.vineMove and self.get_block(x-1, y+1) in self.vine.vineMove:# and self.get_block(x, y+1) in self.vine.vineMove:
-                    self.place_block("V", x-1, y)   # left
-                    self.vine.cnt += 1
-                elif random.randint(0, 99) < 25 and self.get_block(x-1, y-1) in self.vine.vineMove and self.get_block(x+1, y-1) in self.vine.vineMove:
-                    self.place_block("V", x, y-1)   # up
-                    self.vine.cnt += 1
+        if random.randint(0, 99) < self.vine.chance:
+            if random.randint(0, 99) < 15 and self.get_block(x+1, y-1) in self.vine.vineMove and self.get_block(x+1, y+1) in self.vine.vineMove:# and self.get_block(x, y+1) in self.vine.vineMove:
+                self.place_block("V", x+1, y)   # right
+            elif random.randint(0, 99) < 15 and self.get_block(x-1, y-1) in self.vine.vineMove and self.get_block(x-1, y+1) in self.vine.vineMove:# and self.get_block(x, y+1) in self.vine.vineMove:
+                self.place_block("V", x-1, y)   # left
+            elif random.randint(0, 99) < 25 and self.get_block(x-1, y-1) in self.vine.vineMove and self.get_block(x+1, y-1) in self.vine.vineMove:
+                self.place_block("V", x, y-1)   # up
 
     def tick_game_world(self):
         """Ticks game world forward by applying gravity and brownian.
@@ -138,11 +156,15 @@ class SandGame:
             for x in reversed(range(self.gameWidth)):
                 cell = self.get_block(x, y)
                 if cell == "S":
-                    self.__apply_gravity_on_block__(x, y)     
-                    self.__apply_brownian_on_block__(x, y)
+                    self.__apply_gravity_on_block__(x, y, "S")     
+                    self.__apply_brownian_on_block__(x, y, "S")
                 elif cell == "V" and delta >= 0.18:
                     self.__vine_grow_on_block__(x, y)
                     self.vineTime = time.time()
+                elif cell == "W":
+                    self.__apply_gravity_on_block__(x, y, "W")     
+                    # self.__apply_brownian_on_block__(x, y, "W")
+                    self.__apply_flow_on_block__(x, y, "W")
     
     def reset_game_world(self, newSize: Tuple[int, int] | None = None):
         """Resets the game world with an option to designate new size.
