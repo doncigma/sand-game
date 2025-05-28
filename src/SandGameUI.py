@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGraphicsView, QGraphicsScene, QVBoxLayout, QHBoxLayout, QGraphicsRectItem, QPushButton, QRadioButton, QCheckBox
-from PyQt6.QtCore import QTimer, QRect, QRectF, QPoint, Qt
+from PyQt6.QtCore import QTimer, QRectF, QPoint
 from PyQt6.QtGui import QColor, QMouseEvent
 from typing import Tuple
 
@@ -7,7 +7,7 @@ from SandGame import SandGame
 from Slider import Slider
 
 class SandGameUI(QMainWindow):
-    def __init__(self, gameSize: Tuple[int, int] = (50, 50), brownian = 20):
+    def __init__(self, gameSize: Tuple[int, int] = (50, 50), brownian: int = 20):
         super().__init__()
         self.setWindowTitle("I Hate Sand")
         
@@ -133,7 +133,7 @@ class SandGameUI(QMainWindow):
         if mode in self.allElements:
             self.mouseMode = mode
     
-    def scenePressEvent(self, event: QMouseEvent):
+    def scenePressEvent(self, event: QMouseEvent) -> None:
         self.mouseDown = True
         self.process_mouse_event(self.view.mapToScene(event.pos()))
 
