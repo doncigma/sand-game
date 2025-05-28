@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QSlider, QLabel, QVBoxLayout
 from PyQt6.QtCore import Qt
-from typing import Tuple
 
 class Slider(QWidget):
     def __init__(self, customLabel: str, min: int, max: int, val: int):

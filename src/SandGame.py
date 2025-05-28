@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, Optional
+from typing import Tuple
 import random
 from dataclasses import dataclass
 import time
@@ -91,7 +91,7 @@ class SandGame:
                  
         return result
         
-    def remove_block(self, x: int, y: int, blockToReplace = "A"):
+    def remove_block(self, x: int, y: int, blockToReplace: str = "A"):
         if 0 <= x < self.gameWidth and 0 <= y < self.gameHeight:
             self.__gameMatrix__[x][y] = blockToReplace
     
@@ -174,8 +174,3 @@ class SandGame:
             self.gameHeight = newSize[1]
             
         self.__gameMatrix__ = np.full((self.gameWidth, self.gameHeight), "A")
-    
-    def __unit_test_reset__(self):
-        """For unit testing purposes only.
-        """        
-        self.__gameMatrix__ = np.full((5, 5), "A")
